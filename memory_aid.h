@@ -1,5 +1,7 @@
 // #include <stdio.h>
 
+#define HOTEL_EXPANSION  500
+
 typedef struct s_vector {
     void    **array;
     int     size;
@@ -21,11 +23,11 @@ typedef struct s_mem_room {
 
 typedef struct s_mem_hotel {
     t_mem_room  *listing;
-    int         vacancy;         
+    int         vacancy;
     int         size;
     int         capacity;
     void        *(*checkin)(void**);
-    void        *(*for_each)(t_mem_room*,void*(*)());
+    void        *(*for_each)(t_mem_room*, void*(*)());
 } t_mem_hotel;
 
 typedef struct s_super_memory_aid {
@@ -36,6 +38,7 @@ typedef struct s_super_memory_aid {
     void        (*cleanup)(void);
 
     void        (*housekeep)(void);
+    int         manual;
     t_mem_hotel *hotel;
 } t_super_memory_aid;
 
@@ -45,6 +48,9 @@ typedef struct s_memory_aid {
     void*(*pass)(void*, void*);
     void*(*check)(void*);
     void(*cleanup)(void);
+    void(*manual)(void);
+    void(*automatic)(void);
+    void(*efficiency)(void);
 } t_memory_aid;
 
 

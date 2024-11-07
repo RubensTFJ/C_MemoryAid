@@ -2,19 +2,18 @@
 
 t_memory_aid *maid(void)
 {
-    static t_super_memory_aid memory_aid;
+    static t_super_memory_aid memory_aid = {
+        .alloc = maid_alloc,
+        .share = maid_share,
+        .pass = maid_pass,
+        .check = maid_check,
+        .cleanup = maid_housekeep,
+        .housekeep = maid_housekeep,
+        .manual = 0,
+    };
 
     return ((t_memory_aid*)&memory_aid);
 }
-
-// void    maid_calloc(void** pointer, int size)
-// {
-//     t_super_memory_aid *this
-
-//     this = ((t_super_memory_aid*)(maid()));
-//     maid_add_guests(pointer);
-//     maid_housekeep();
-// }
 
 void    maid_alloc(void** pointer, int size)
 {
@@ -23,8 +22,8 @@ void    maid_alloc(void** pointer, int size)
     this = (t_super_memory_aid*)maid();
     *pointer = malloc(size);
     this->hotel->checkin(pointer);
-    this->housekeep(this->hotel);
-    // (t_mem_hotel*){ malloc(sizeof(t_mem_hotel)) } = (t_mem_hotel) {0};
+    if (!this->manual)
+        this->housekeep(this);
 }
 
 void    maid_share(void*, void*);
@@ -32,23 +31,25 @@ void    maid_pass(void*, void*);
 void    maid_check(void*);
 void    maid_cleanup(void);
 
-void    maid_housekeep(t_mem_hotel *this)
+void    maid_housekeep(t_super_memory_aid *this)
 {
+    t_mem_hotel *hotel;
     t_mem_room  *listing;
     t_mem_room  *room;
     int         number;
 
-    listing = this->listing;
+    hotel = this->hotel;
+    listing = hotel->listing;
     number = 0;
-    while (number < this->size)
+    while (number < hotel->size)
     {
         room = &listing[number];
         if (*room->guest != room->reference)
         {
             free(room->reference);
             room->occupied = 0;
-            if (number < this->vacancy)
-                this->vacancy = number;
+            if (number < hotel->vacancy)
+                hotel->vacancy = number;
         }
         number++;
     }
@@ -68,7 +69,17 @@ void    hotel_checkin(void** guest)
         hotel->vacancy++;
     if (hotel->vacancy >= hotel->capacity)
     {
-        hotel->listing = realloc(hotel->listing, sizeof(t_mem_room) * hotel->capacity + 500);
-        hotel->capacity += 500;
+        hotel->listing = realloc(hotel->listing, sizeof(t_mem_room) * hotel->capacity + HOTEL_EXPANSION);
+        hotel->capacity += HOTEL_EXPANSION;
     }
+}
+
+void    do_nothing(void)
+{
+    return ;
+}
+
+void    maid_manual(void)
+{
+    (t_super_memory_aid*)maid()->manual = 1;
 }
