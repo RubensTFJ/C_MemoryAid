@@ -2,31 +2,29 @@
 
 t_memory_aid *maid(void)
 {
-    static t_full_memory_aid memory_aid;
+    static t_super_memory_aid memory_aid;
 
     return ((t_memory_aid*)&memory_aid);
 }
 
-void    maid_calloc(void** pointer, int size)
-{
-    t_full_memory_aid *this;
+// void    maid_calloc(void** pointer, int size)
+// {
+//     t_super_memory_aid *this
 
-    this = ((t_full_memory_aid*)(maid()));
-    maid_add_guests(pointer);
-    maid_housekeep();
-}
+//     this = ((t_super_memory_aid*)(maid()));
+//     maid_add_guests(pointer);
+//     maid_housekeep();
+// }
 
 void    maid_alloc(void** pointer, int size)
 {
-    t_room              *new_room;
-    t_vector            *hotel;
+    t_super_memory_aid  *this;
 
+    this = (t_super_memory_aid*)maid();
     *pointer = malloc(size);
-    new_room = malloc(sizeof(t_room));
-    new_room->space = *pointer;
-    new_room->guest = pointer;
-    ((t_full_memory_aid*)maid())->hotel->push_back(new_room);
-    maid_housekeep();
+    this->hotel->checkin(pointer);
+    this->housekeep(this);
+    // (t_mem_hotel*){ malloc(sizeof(t_mem_hotel)) } = (t_mem_hotel) {0};
 }
 
 void    maid_share(void*, void*);
@@ -34,31 +32,40 @@ void    maid_pass(void*, void*);
 void    maid_check(void*);
 void    maid_cleanup(void);
 
-void    maid_housekeep()
+void    maid_housekeep(t_super_memory_aid *this)
 {
-    t_full_memory_aid   *this;
-    t_room      **rooms;
+    t_mem_hotel *hotel;
+    t_mem_room  *listing;
+    t_mem_room  *room;
     int         number;
 
-    this = (t_full_memory_aid*)maid();
-    rooms = this->hotel->array;
+    hotel = this->hotel;
+    listing = hotel->listing;
     number = 0;
-    while (number < this->hotel->size)
+    while (number < hotel->size)
     {
-        if (*rooms[number]->guest != rooms[number]->space)
+        room = &listing[number];
+        if (*room->guest != room->reference)
         {
-            free(rooms[number]->space);
-            free(rooms[number]);
-            rooms[number] = (void*)0;
+            free(room->reference);
+            room->occupied = 0;
+            if (number < hotel->vacancy)
+                hotel->vacancy = number;
         }
         number++;
     }
 }
 
-// void    maid_add_guests(void** pointer)
-// {
-//     t_full_memory_aid *this;
+void    hotel_checkin(void** guest)
+{
+    t_mem_hotel *hotel;
+    t_mem_room  *room;
 
-//     this = ((t_full_memory_aid*)(maid()));
-//     this->guests->push_back(pointer);
-// }
+    hotel = ((t_super_memory_aid*)maid())->hotel;
+    room = &hotel->listing[hotel->vacancy];
+    room->guest = guest;
+    room->reference = *guest;
+    room->occupied = 1;
+    while (hotel->vacancy < hotel->capacity && hotel->listing[hotel->vacancy].occupied)
+        hotel->vacancy++;
+}

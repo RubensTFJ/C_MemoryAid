@@ -1,31 +1,43 @@
-#
+// #include <stdio.h>
 
 typedef struct s_vector {
     void    **array;
     int     size;
-    void*(*push_back)(void*);
-    void*(*for_each)(void*(*)());
-    void*(*check)(void*);
-    void(*cleanup)(void);
+    void    *(*push_back)(void*);
+    void    *(*for_each)(void*(*)());
+    void    *(*check)(void*);
+    void    (*cleanup)(void);
 } t_vector;
 
-typedef struct s_room {
+typedef struct s_reference {
+    void**  reference;
+} t_reference;
+
+typedef struct s_mem_room {
     void**  guest;
-    void*   space;
-    // bool    occupied;
-} t_room;
+    void*   reference;
+    char    occupied;
+} t_mem_room;
 
-typedef struct s_full_memory_aid {
-    void*(*alloc)(void**, int);
-    void*(*share)(void*, void*);
-    void*(*pass)(void*, void*);
-    void*(*check)(void*);
-    void(*cleanup)(void);
+typedef struct s_mem_hotel {
+    t_mem_room  *listing;
+    int         vacancy;         
+    int         size;
+    int         capacity;
+    void        *(*checkin)(void**);
+    void        *(*for_each)(t_mem_room*,void*(*)());
+} t_mem_hotel;
 
-    void(*housekeep)(void);
-    void(*add_guests)(void**);
-    t_vector    *hotel;
-} t_full_memory_aid;
+typedef struct s_super_memory_aid {
+    void        *(*alloc)(void**, int);
+    void        *(*share)(void*, void*);
+    void        *(*pass)(void*, void*);
+    void        *(*check)(void*);
+    void        (*cleanup)(void);
+
+    void        (*housekeep)(void);
+    t_mem_hotel *hotel;
+} t_super_memory_aid;
 
 typedef struct s_memory_aid {
     void*(*alloc)(void**, int);
