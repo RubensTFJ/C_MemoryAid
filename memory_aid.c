@@ -1,13 +1,8 @@
 #include "memory_aid.h"
 
-// void	maid_share(void*, void*);
-// void	maid_pass(void*, void*);
-// void	maid_check(void*);
-// void	maid_cleanup(void);
-
-t_super_memory_aid *sudo(void *toreturn)
+static inline t_super_memory_aid *sudo(t_memory_aid *toreturn)
 {
-	return (toreturn);
+	return ((t_super_memory_aid*)toreturn);
 }
 
 void	maid_alloc(void** pointer, int size)
@@ -32,23 +27,24 @@ void	maid_housekeep(t_super_memory_aid *this)
 	listing = hotel->listing;
 	number = 0;
 	printf("housekeep\n");
-	printf("hotel size = %i\n", hotel->size);
 	while (number < hotel->size)
 	{
 		room = &listing[number];
 		printf("house keep %p, %p\n", *(room->guest), room->reference);
-		if (*(room->guest) != room->reference)
+		if (room->occupied && *(room->guest) != room->reference)
 		{
 			printf("freed room %i\n", number);
 			free(room->reference);
-			room->occupied = 0;
+			room->occupied = false;
 			if (number < hotel->vacancy)
 				hotel->vacancy = number;
 		}
 		number++;
 	}
-	// while (hotel->size > 0 && (hotel->listing[hotel->size].occupied == false))
-	// 	hotel->size--;
+	while (hotel->size > 0 && (hotel->listing[hotel->size - 1].occupied == false))
+		hotel->size--;
+	printf("hotel size = %i\n", hotel->size);
+	
 }
 
 void	hotel_checkin(void** guest)
@@ -61,7 +57,7 @@ void	hotel_checkin(void** guest)
 	room = &hotel->listing[hotel->vacancy];
 	room->guest = guest;
 	room->reference = *guest;
-	room->occupied = 1;
+	room->occupied = true;
 	printf("hotel vacancy & size before %i, %i\n", hotel->vacancy, hotel->size);
 	while (hotel->vacancy < hotel->capacity && hotel->listing[hotel->vacancy].occupied)
 		hotel->vacancy++;
@@ -116,6 +112,16 @@ void	maid_manual(int	size)
 	this->hotel = new_hotel();
 }
 
+void	maid_book_memory(void **guest)
+{
+	t_super_memory_aid	*this;
+
+	this = sudo(maid());
+	this->hotel->checkin(guest);
+	if (!this->automatic)
+		this->housekeep(this);
+}
+
 t_memory_aid *maid(void)
 {
 	static t_super_memory_aid memory_aid = {
@@ -123,7 +129,8 @@ t_memory_aid *maid(void)
 		// .share = maid_share,
 		// .pass = maid_pass,
 		// .check = maid_check,
-		// .cleanup = maid_housekeep,
+		.cleanup = maid_housekeep,
+		.book = maid_book_memory,
 		.housekeep = maid_housekeep,
 		.destroy = maid_destroy,
 		.manual = maid_manual,

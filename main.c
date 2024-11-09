@@ -51,7 +51,9 @@ int main(void)
 	HERE;
 	maid()->manual(0);
 	// printf("manual ok\n");
-	maid()->alloc(&test1, sizeof(int));
+	test1 = malloc(sizeof(int));
+	maid()->book(&test1);
+	// maid()->alloc(&test1, sizeof(int));
 	test1 = NULL;
 	ft_itoa(3232);
 	// printf("itoa ok\n");
@@ -60,6 +62,10 @@ int main(void)
 	ft_itoa(3232);
 	stack_func();
 	ft_itoa(3232);
-
+    t_itoa  	ascii;
+	void		*temp;
+	int			index;
+	int			sign;
+	maid()->cleanup(maid());
     return (0);
 }
