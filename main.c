@@ -13,7 +13,7 @@ t_itoa   ft_itoa(int number)
 	int			sign;
 
 	// printf("before first malloc\n");
-
+	temp = NULL;
 	maid()->alloc(&temp, sizeof(t_mem_room));
 	// printf("first malloc ok\n");
 
@@ -47,25 +47,28 @@ void	stack_func(void)
 int main(void)
 {
 	int	*test1;
+	int	*test2;
+	int	*test3;
+	int	*test4;
+	int	*test5;
+	int	*test6;
 
-	HERE;
-	maid()->manual(0);
-	// printf("manual ok\n");
+	maid()->start();
 	test1 = malloc(sizeof(int));
+	test2 = malloc(sizeof(int));
+	test3 = malloc(sizeof(int));
+	test4 = malloc(sizeof(int));
+	test5 = malloc(sizeof(int));
+	test6 = malloc(sizeof(int));
 	maid()->book(&test1);
-	// maid()->alloc(&test1, sizeof(int));
-	test1 = NULL;
-	ft_itoa(3232);
-	// printf("itoa ok\n");
-	// printf("itoa ok\n");
-	stack_func();
-	ft_itoa(3232);
-	stack_func();
-	ft_itoa(3232);
-    t_itoa  	ascii;
-	void		*temp;
-	int			index;
-	int			sign;
-	maid()->cleanup(maid());
+	maid()->book(&test2);
+	maid()->book(&test3);
+	test2 = NULL;
+	maid()->book(&test4);
+	maid()->book(&test5);
+	maid()->book(&test6);
+
+	// maid()->cleanup();
+	maid()->destroy();
     return (0);
 }
