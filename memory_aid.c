@@ -32,8 +32,7 @@ void	maid_housekeep(void)
 		{
 			printf("freed room %i\n", number);
 			free(room->reference);
-			room->guest = NULL;
-			room->occupied = false;
+			*(room) = (t_mem_room){0};
 			if (number < hotel->vacancy)
 				hotel->vacancy = number;
 		}

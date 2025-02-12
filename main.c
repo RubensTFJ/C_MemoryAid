@@ -1,4 +1,5 @@
 #include "memory_aid.h"
+#include <stdarg.h>
 
 typedef struct s_itoa {
     char    arr[12];
@@ -44,6 +45,25 @@ void	stack_func(void)
 	a = (t_mem_hotel){NULL};
 }
 
+
+// #define CALL_FUNCTION(fn_ptr, ...) fn_ptr(__VA_ARGS__)
+
+// void	caller(void *function, ...)
+// {
+//     va_list args;
+    
+//     // Start processing the variable arguments
+//     va_start(args, function);
+    
+//     // Call the function pointer by casting it to the appropriate type
+//     ((void(*)())function)(args);
+//     ((void(*)())function)(__VA_ARGS__);
+    
+//     // End processing the variable arguments
+//     va_end(args);
+// }
+
+
 int main(void)
 {
 	int	*test1;
@@ -60,15 +80,43 @@ int main(void)
 	test4 = malloc(sizeof(int));
 	test5 = malloc(sizeof(int));
 	test6 = malloc(sizeof(int));
+	printf("mallocs\n");
 	maid()->book(&test1);
 	maid()->book(&test2);
 	maid()->book(&test3);
+	printf("books\n");
 	test2 = NULL;
+	printf("null\n");
 	maid()->book(&test4);
 	maid()->book(&test5);
 	maid()->book(&test6);
+	printf("more books\n");
 
-	// maid()->cleanup();
+	test1 = NULL;
+	test2 = NULL;
+	test3 = NULL;
+	test4 = NULL;
+	test5 = NULL;
+	test6 = NULL;
+	printf("more nulls\n");
+	maid_alloc((void*)&test1, sizeof(int));
+	printf("maid_alloc\n");
+	maid_alloc((void*)&test1, sizeof(int));
+	maid_alloc((void*)&test1, sizeof(int));
+	maid_alloc((void*)&test1, sizeof(int));
+	maid_alloc((void*)&test1, sizeof(int));
+	maid_alloc((void*)&test1, sizeof(int));
+	maid_alloc((void*)&test1, sizeof(int));
+
+	test1 = NULL;
+	printf("itoa malloc\n");
+	ft_itoa(123);
+	stack_func();
+	printf("clean up\n");
+	maid()->cleanup();
+	printf("clean up\n");
+	printf("before destroy\n");
+	
 	maid()->destroy();
     return (0);
 }

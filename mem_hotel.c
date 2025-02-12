@@ -25,7 +25,8 @@ void	hotel_checkin(t_mem_hotel *this, void** guest)
 	t_mem_room  *room;
 
 	this->size += (this->vacancy == this->size);
-	room = &this->listing[this->vacancy];
+	printf("occupied room %i\n", this->vacancy);
+	room = &(this->listing[this->vacancy]);
 	room->guest = guest;
 	room->reference = *guest;
 	room->occupied = true;
